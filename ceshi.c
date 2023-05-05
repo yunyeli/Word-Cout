@@ -1,119 +1,108 @@
-
-
 #include<stdio.h>
-#include<stdlib.h>
 #include<string.h>
-typedef struct Coordinate {
-	int line;                       //è¡Œå·
-	int row;                        //åˆ—å·
-	struct Coordinate* next;
-} Coord;
- 
-typedef struct NUM {
-	char Num[100];					//å•è¯
-	float i;						//æ¬¡æ•°
-	Coord *P;
-	struct NUM* next;
-} number;
- 
+#include <stdlib.h>
 
- void Sum();
-int main() {
-	Sum();				//ç»Ÿè®¡å•è¯æ€»æ•°
-	return 0;
-}
-void Sum() {
-	int i,j,row_1=1,line_1=1;
-	float sum=0;
+//Í³¼ÆÎÄ¼ş×Ö·ûÊı 
+int getChar(FILE *fp)
+{
 	char ch;
-	number *N,*head,*end;
-	head=(number*)malloc(sizeof(number));
-	end=head;
-	FILE*file;
-	if((file=fopen("Sum.txt","r"))==NULL) {          //é€‰æ‹©ç›¸åº”çš„æ–‡æœ¬æ–‡ä»¶
-		printf("ä¸èƒ½æ‰“å¼€æ–‡ä»¶");
-		exit(0);
+	int num=0;
+	while((ch=fgetc(fp))!=EOF)
+	{
+		num++;
 	}
-	N=(number*)malloc(sizeof(number));
-	while(fscanf(file,"%s",N->Num)!=EOF) {
-		N->P=(Coord*)malloc(sizeof(Coord));
-		N->i=1;
-		end->next=N;
-		end=N;
-		sum++;
-		fscanf(file,"%c",&ch);
-		if(ch!='\n') {
-			N->P->row=row_1;
-			N->P->line=line_1;
-			row_1++;
-		} else {
-			N->P->row=row_1;
-			N->P->line=line_1;
-			row_1=1;
-			line_1++;
-		}
-		N=(number*)malloc(sizeof(number));
+	rewind(fp);
+	return num;
+}
+
+//Í³¼ÆÎÄ¼şµ¥´ÊÊı 
+int getWord(FILE *fp)
+{
+	int num=0;
+	int a=0,b=0;
+	int flag=0;  //×÷ÎªÒ»¸ö±êÖ¾Î»£¬ÓÃÀ´ÅĞ¶Ï¸Ã×Ö·ûµÄÇ°Ò»¸ö×Ö·ûÊÇ·ñÊÇ¶ººÅ»¹ÊÇ¿Õ¸ñ
+	char word;   //È¡³ö¶ÔÓ¦Î»ÖÃµÄ×Ö·û£¬ÓÃWordÈ¥µÃµ½ËüµÄÖµ
+
+    word = fgetc(fp);   //µ±¶ÁÈ¡Ò»¸ö×Ö·ûºó£¬ÏÂ´Î¶ÁÈ¡Ç°»á×Ô¶¯ºóÒÆµ½Ò»¸ö×Ö½Ú¿ªÊ¼¶Á
+
+	if(word == ' ' || word == ',')//ÓÃÀ´ÅĞ¶ÏÊ××Ö·ûÊÇ·ñÊÇ¿Õ¸ñ»¹ÊÇ¶ººÅ
+	{
+		     flag=1;
+			 num--;
+			 b--;
 	}
-	end->next=NULL;
-	fclose(file);
-	printf("è¯¥æ–‡ä»¶å…±æœ‰%.0fä¸ªå•è¯\n",sum);
-	number *A,*B;
-	Coord* HEAD,*M,*END;
-	A=head->next;
-	B=A->next;
-	while(A->next!=NULL) {
-		HEAD=(Coord*)malloc(sizeof(Coord));
-		HEAD=A->P;
-		END=HEAD;
-		while(B->next!=NULL) {
-			if(strcasecmp(A->Num,B->Num)==0) {
-				M=(Coord*)malloc(sizeof(Coord));
-				A->i=A->i+B->i;
-				B->i=0;
-				M=B->P;
-				END->next=M;
-				END=M;
-				B=B->next;
-			} else
-				B=B->next;
+	while(feof(fp)==0)
+    {
+        if(flag == 0 && (word == ' ' || word == ','))//ÅĞ¶Ï¸Ã×Ö·ûÊÇ·ñÎª¶ººÅ»ò¿Õ¸ñ£¬ÈôÊÇÔòËüÖ®Ç°µÄËùÓĞ×Ö·û¹éÎªÒ»¸öµ¥´Ê£¬µ¥´ÊÊı¼ÓÒ»
+		{
+			 num++;
+             flag = 1;
+             a++;
+        }
+        else if( (word != 32 && word != 44) && flag==1) 
+        {
+            num++;
+            flag = 0;
+			b++;
+        }
+		else
+		{
+		    num=num;
 		}
-		if(strcasecmp(A->Num,B->Num)==0) {
-			A->i=A->i+B->i;
-			B->i=0;
-			M=B->P;
-			END->next=M;
-			END=M;
-		}
-		A=A->next;
-		B=A->next;
-		END->next=NULL;
+		word = fgetc(fp);   //µ±¶ÁÈ¡Ò»¸ö×Ö·ûºó£¬ÏÂ´Î¶ÁÈ¡Ç°»á×Ô¶¯ºóÒÆµ½Ò»¸ö×Ö½Ú¿ªÊ¼¶Á
+    }
+	
+	if(flag==1)//ÓÃÀ´ÅĞ¶ÏÄ©Î²×Ö·ûÊÇ·ñÎª¶ººÅ»¹ÊÇ¿Õ¸ñ
+	{
+	    num=a;
 	}
-	HEAD=(Coord*)malloc(sizeof(Coord));
-	HEAD=A->P;
-	END=HEAD;
-	END->next=NULL;
-	number*Node;
-	Node=(number*)malloc(sizeof(number));
-	Node=head->next;
-	while(Node->next!=NULL) {
-		if(Node->i!=0) {
-			printf("%+10s   å‡ºç°é¢‘ç‡ä¸º%.2f å…±%.0fæ¬¡ : ",Node->Num,(Node->i)/sum,Node->i);
-			while(Node->P->next!=NULL) {
-				printf("åœ¨ç¬¬%dè¡Œ ç¬¬%dåˆ—ã€",Node->P->line,Node->P->row);
-				Node->P=Node->P->next;
+    rewind(fp);
+	if(a==b)//ÓÃÀ´ÅĞ¶ÏÖĞ¼äÊÇ·ñÓĞ±»ÖØ¸´¼ÆËãÁËµÄµ¥´ÊÊıÄ¿
+	{
+	num=num/2+1;
+	}
+    return num;
+}
+
+
+int main(int argc,char*argv[])
+{
+	FILE *fp;
+	int num;
+	char string;
+
+    if(argc==3)
+	{
+    	
+		fp = fopen(argv[2],"r");        //¶ÁÈ¡ÎÄ¼şµÄÄÚÈİ
+		 
+		if(fp == NULL)
+		{
+			printf("´íÎó£ºÎŞ·¨´ò¿ª%s\n",argv[2]);
+			exit(1);
+		}     //´ò¿ªÊ§°Ü
+		
+
+            //¶Ô²ÎÊı½øĞĞÆ¥Åä£¬ÈôÎª"c"ÔòÍ³¼Æ×Ö·ûÊıÄ¿£¬ÈôÎª"w"ÔòÍ³¼Æµ¥´ÊÊıÄ¿£¬Èô¶¼²»ÊÇÔò±¨´í
+	       if(!strcmp(argv[1],"-c"))	
+			{
+		        num = getChar(fp);
+		     	printf("×Ö·ûÊıÎª£º%d\n",num);
+		    }
+		
+		   else if(!strcmp(argv[1],"-w"))
+			{
+			    num = getWord(fp);
+			    printf("µ¥´ÊÊıÎª£º%d\n",num); 
 			}
-			printf("åœ¨ç¬¬%dè¡Œ ç¬¬%dåˆ— ",Node->P->line,Node->P->row);
-			printf("\n");
-			Node=Node->next;
-		} else
-			Node=Node->next;
+           else 
+			{
+                printf("²ÎÊı´íÎó £¡");
+            }
 	}
-	if(Node->i!=0) {
-		printf("%+10s   å‡ºç°é¢‘ç‡ä¸º%.2f å…±%.0fæ¬¡ : ",Node->Num,(Node->i)/sum,Node->i);
-		while(Node->P->next!=NULL) {
-			printf("åœ¨ç¬¬%dè¡Œ ç¬¬%dåˆ—ã€",Node->P->line,Node->P->row);
-			Node->P=Node->P->next;
-		}
-		printf("åœ¨ç¬¬%dè¡Œ ç¬¬%dåˆ— ",Node->P->line,Node->P->row);
+	else 
+	{
+		printf("´íÎó£º²ÎÊıÊäÈë´íÎó£¬ÇëÖØĞÂÊäÈë\n");
 	}
 }
+
